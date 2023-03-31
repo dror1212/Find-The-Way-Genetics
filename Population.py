@@ -1,11 +1,12 @@
 import pygame
 import random
 import math
+import sys
 import tkinter as tk
 from Rocket import Rocket
 
 class Population:
-    def __init__(self, mutationRate, popmax,moves, survivelRate, target):
+    def __init__(self, mutationRate, popmax,moves, survivelRate, target=(250,50), screen=(500, 500), deathZones=[[150, 200, 200, 25]]):
         self.target = target
         self.survivelRate = survivelRate
         self.mutationRate = mutationRate
@@ -18,9 +19,17 @@ class Population:
         self.fitnessSum = 0
         self.originalDistance = math.sqrt((self.population[0].rect[0] - self.target[0])**2 + (self.population[0].rect[1] - self.target[1])**2)
         pygame.init()
-        self.screen = pygame.display.set_mode((500, 500))
-        self.deathZone = pygame.draw.rect(self.screen, (255,0,0), [150, 200, 200, 25])
-        self.endPoint = pygame.draw.circle(self.screen, (0,0,255), self.target, 10)
+        self.screen = pygame.display.set_mode(screen)
+        self.deathZoneColor=(255,0,0)
+        self.deathZones = []
+        for deathZone in deathZones:
+            self.deathZones.append(pygame.draw.rect(self.screen, self.deathZoneColor, deathZone))
+        self.targetColor=(0,0,255)
+        self.endPoint = pygame.draw.circle(self.screen, self.targetColor, self.target, 10)
+        self.charecter=[240, 400, 12, 12]
+        self.charecterColor=(255,255,255)
+        self.bestColor=(0,255,0)
+        
         self.font = pygame.font.Font('freesansbold.ttf', 26)
         
         self.master = tk.Tk()
@@ -44,6 +53,10 @@ class Population:
         self.master.update_idletasks()
         self.master.update()
         for i in range(len(self.population[0].moves)):
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                    sys.exit()
             self.population.sort(key = lambda rocket : rocket.getDistance(self.target))
             for event in pygame.event.get():
                 pass
@@ -56,20 +69,21 @@ class Population:
             for rocket in self.population[::-1]:
                 color = (0,0,0)
                 if counter == 0:
-                    color = (0,255,0)
+                    color = self.bestColor
                 if counter > self.amount:
-                    color = (255,255,255)
+                    color = self.charecterColor
                 currRect = pygame.draw.rect(self.screen, color, rocket.rect)
-                    
-                if currRect.colliderect(self.deathZone):
-                    rocket.isAlive = False
+                for deathZone in self.deathZones:
+                    if currRect.colliderect(deathZone):
+                        rocket.isAlive = False
                 if currRect.colliderect(self.endPoint) and not rocket.win:
                     rocket.win = True
                     rocket.turns = i
                 counter -=1
-                    
-            pygame.draw.rect(self.screen, (255,0,0), [150, 200, 200, 25])
-            self.endPoint = pygame.draw.circle(self.screen, (0,0,255), self.target, 10)
+            
+            for deathZone in self.deathZones:
+                pygame.draw.rect(self.screen, self.deathZoneColor, deathZone)
+            self.endPoint = pygame.draw.circle(self.screen, self.targetColor, self.target, 10)
             text = self.font.render('Generation: ' + str(self.geneartion), True, (255,255,255), (0,0,0)) 
             textRect = text.get_rect()  
             self.screen.blit(text, textRect) 
@@ -108,7 +122,7 @@ class Population:
             newPopulation.append(child)
             
         for i in range(int(len(self.population) * (self.survivelRate))):
-            newPopulation[i].rect = [240, 400, 12, 12]
+            newPopulation[i].rect = self.charecter
             newPopulation[i].turns = len(newPopulation[i].moves)
             newPopulation[i].win = False
 
@@ -126,8 +140,4 @@ class Population:
                 
         bestRect = pygame.draw.rect(self.screen, (0,0,0), best.rect)
             
-        return (str(best.fitness) + " " + str(best.turns))
-
-def forSort(rocket):
-    return rocket.fitness
-    
+        return ("score: " + str(best.fitness) + " movements: " + str(best.turns))
