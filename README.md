@@ -14,4 +14,9 @@ At the start you will see basiclly random moves which will improve with time usi
 
 ### Gen 1
 
+https://user-images.githubusercontent.com/24302513/229307237-c4f8f1e4-1640-44b5-888e-3e6f950e88f5.mp4
+
 ### Gen 700+
+
+https://user-images.githubusercontent.com/24302513/229307162-1f59ef25-8f86-484f-95fd-732760db65d8.mp4
+
