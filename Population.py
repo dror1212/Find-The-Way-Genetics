@@ -58,8 +58,6 @@ class Population:
                     pygame.quit()
                     sys.exit()
             self.population.sort(key = lambda rocket : rocket.getDistance(self.target))
-            for event in pygame.event.get():
-                pass
             for rocket in self.population:
                 if rocket.isAlive and not rocket.win:
                     rocket.move(i)
@@ -114,17 +112,15 @@ class Population:
         self.population.sort(key = lambda rocket : rocket.fitness, reverse=True)
         newPopulation = self.population[:int(self.survivelRate * len(self.population))]
 
+        for i in range(len(newPopulation)):
+            newPopulation[i].reset(self.charecter)
+
         for i in range(int(len(self.population) * (1 - self.survivelRate))):
             first = random.choice(self.matingPool)
             second = random.choice(self.matingPool)
             child = first.crossOver(second)
             child.mutation(self.mutationRate)
             newPopulation.append(child)
-            
-        for i in range(int(len(self.population) * (self.survivelRate))):
-            newPopulation[i].rect = self.charecter
-            newPopulation[i].turns = len(newPopulation[i].moves)
-            newPopulation[i].win = False
 
         self.population = newPopulation
         self.geneartion = self.geneartion + 1

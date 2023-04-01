@@ -17,6 +17,14 @@ class Rocket:
         self.moves = []
         self.randomWays(moves)
 
+    def reset(self, rect):
+        self.fitness = 0
+        self.rect = rect.copy()
+        self.isAlive = True
+        self.startingRect = rect.copy()
+        self.win = False
+        self.turns = len(self.moves)
+
     def move(self, index):
         self.rect[0] += self.moves[index][0]
         self.rect[1] += self.moves[index][1]
