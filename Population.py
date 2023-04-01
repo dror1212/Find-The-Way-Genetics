@@ -6,14 +6,15 @@ import tkinter as tk
 from Rocket import Rocket
 
 class Population:
-    def __init__(self, mutationRate, popmax,moves, survivelRate, target=(250,50), screen=(500, 500), deathZones=[[150, 200, 200, 25]]):
+    def __init__(self, mutationRate, popmax, moves, survivelRate, target=(250,50), screen=(500, 500), charecter=[240, 400, 12, 12], deathZones=[[150, 200, 200, 25]]):
         self.target = target
         self.survivelRate = survivelRate
         self.mutationRate = mutationRate
         self.popmax = popmax
         self.amount = popmax
         self.matingPool = []
-        self.population = [Rocket(moves) for rand in range(popmax)]
+        self.charecter = charecter
+        self.population = [Rocket(moves, self.charecter) for rand in range(popmax)]
         self.geneartion = 1
         self.isFinished = False
         self.fitnessSum = 0
@@ -26,7 +27,6 @@ class Population:
             self.deathZones.append(pygame.draw.rect(self.screen, self.deathZoneColor, deathZone))
         self.targetColor=(0,0,255)
         self.endPoint = pygame.draw.circle(self.screen, self.targetColor, self.target, 10)
-        self.charecter=[240, 400, 12, 12]
         self.charecterColor=(255,255,255)
         self.bestColor=(0,255,0)
         
